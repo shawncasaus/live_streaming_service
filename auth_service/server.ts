@@ -14,9 +14,10 @@ app.use(express.json());
 
 // Basic route
 app.get('/auth', (req: Request, res: Response) => {
-    const streamKey = req.body.key;
+    const streamkey = req.body.key;
 
-    if (streamKey === "password") {
+    // auth check
+    if (streamkey === "password") {
         res.status(200).send();
         return;
     }
