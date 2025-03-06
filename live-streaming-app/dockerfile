@@ -1,3 +1,32 @@
-FROM tianglo/nginx-rtmp
+# Stage 1: Build Vue app
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json first for caching
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the app source code
+COPY . .
+
+# Build the Vue app
+RUN npm run build
+
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
+
+# Copy built Vue files from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration (must be in your project root)
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY index.html /www/
+
+# Expose port 80 for HTTP traffic
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
+

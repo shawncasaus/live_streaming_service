@@ -1,14 +1,32 @@
+version: '3.8'
+
 services:
-  rtmp:
+  nginx-rtmp:
     build: ./streaming-service
+    container_name: nginx-rtmp
     ports:
-      - "1935:1935"
-      - "5173:5173"
-    container_name: live_server
+      - "1935:1935"  # RTMP ingest
+      - "8081:8080"  # HLS playback
     volumes:
-      - ./data:/tmp/hls
+      - ./streaming-service/nginx.rtmp:/etc/nginx/nginx.conf  # Corrected path
+      - ./hls:/tmp/hls  # Store HLS segments
+    restart: unless-stopped
+
+  frontend:
+    build: ./live-streaming-app
+    container_name: live-streaming-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - nginx-rtmp
+    restart: unless-stopped
 
   auth:
-    build: ./auth
-    container_name: auth_server
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
 
