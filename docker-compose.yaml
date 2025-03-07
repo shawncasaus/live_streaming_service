@@ -9,7 +9,7 @@ services:
       - "8081:8080"  # HLS playback
     volumes:
       - ./streaming-service/nginx.rtmp:/etc/nginx/nginx.conf  # Corrected path
-      - ./hls:/tmp/hls  # Store HLS segments
+      - ./hls_data:/tmp/hls  # Store HLS segments
     restart: unless-stopped
 
   frontend:
