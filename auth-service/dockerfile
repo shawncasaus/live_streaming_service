@@ -1,24 +1,20 @@
-# Use a lightweight Node.js LTS image
+# Use a lightweight Node.js image
 FROM node:18-alpine
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json first (better caching)
-COPY package*.json ./
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm install --only=production
+RUN npm install
 
-# Copy the rest of the app source code
+# Copy the rest of the application
 COPY . .
 
-# Set environment variable for production
-ENV NODE_ENV=production
+# Compile TypeScript before running
+RUN npm run build
 
-# Expose the port your Express app runs on
-EXPOSE 3000
-
-# Start the server
-CMD ["node", "server.js"]
+# Start the compiled JS file
+CMD ["node", "dist/server.js"]
 

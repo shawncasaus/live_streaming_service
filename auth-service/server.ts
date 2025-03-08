@@ -1,31 +1,34 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Basic route
-app.get('/auth', (req: Request, res: Response) => {
-    const streamkey = req.body.key;
+// Auth Route (Use POST instead of GET)
+app.post('/auth', (req: Request, res: Response): void => {
+    const { key: streamkey } = req.body;
 
-    // auth check
+    // Auth check
     if (streamkey === "password") {
         res.status(200).send();
-        return;
+    } else {
+        res.status(403).send();
     }
-    res.status(403).send();
 });
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Auth service is running on port ${PORT}`);
 });
 
