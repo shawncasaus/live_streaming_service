@@ -27,6 +27,10 @@ app.post('/auth', (req: Request, res: Response): void => {
     }
 });
 
+app.get('/health', (req: Request, res: Response): void => {
+    res.status(200).json({ status: 'ok' });
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Auth service is running on port ${PORT}`);
